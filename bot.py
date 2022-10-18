@@ -10,6 +10,9 @@ import os
 import logging
 import logging.handlers
 
+# local imports
+import guildid
+
 # check if discord.log exists if it does it deletes it than creates a new one
 # if discord.log doesn't exist it creates a new one
 # it is used to log errors
@@ -36,21 +39,10 @@ formatter = logging.Formatter('[{asctime}] [{levelname:<8}] {name}: {message}', 
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-# sys imports
-import os
-
-
 # startup stuff
 load_dotenv()
 
-async def load_extensions():
-    for name in os.listdir('./slashcmd'):
-        if name.endswith('.py'):
-            await bot.load_extension(f'slashcmd.{name[:-3]}')
-
-# load discord bot
-guild = discord.Object(id=982466619240509471)
-
+# create the bot
 class MyBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="!", intents=discord.Intents.all())
@@ -61,16 +53,22 @@ class MyBot(commands.Bot):
         print('------')
 
     async def on_ready(self):
-        await tree.sync(guild=guild)
+        await tree.sync(guild=guildid.guilds)
         self.synced = True
 
+    async def load_extensions(self):
+        for name in os.listdir('./slashcmd'):
+            if name.endswith('.py'):
+                await self.load_extension(f'slashcmd.{name[:-3]}')
+
+# making var for commands in this file
 bot = MyBot()
 tree = bot.tree
 
 # start bot
 async def main():
     async with bot:
-        await load_extensions()
+        await bot.load_extensions()
         await bot.start(os.getenv("token"))
         await asyncio.sleep(0.1)
     await asyncio.sleep(0.1)
