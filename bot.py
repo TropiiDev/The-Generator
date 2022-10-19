@@ -13,6 +13,7 @@ import logging.handlers
 # local imports
 import guildid
 
+
 # check if discord.log exists if it does it deletes it than creates a new one
 # if discord.log doesn't exist it creates a new one
 # it is used to log errors
@@ -49,7 +50,7 @@ class MyBot(commands.Bot):
         self.synced = False
         
     async def setup_hook(self):
-        print(f'Logged in as {self.user} (ID: {self.user.id})')
+        print(f'\33[32mLogged in as {self.user} (ID: {self.user.id})')
         print('------')
 
     async def on_ready(self):
